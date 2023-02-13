@@ -2,10 +2,12 @@
 
 __lazyshell_complete() {
   if [ -z "$OPENAI_API_KEY" ]; then
+    echo ""
     echo "Error: OPENAI_API_KEY is not set"
     echo "Get your API key from https://beta.openai.com/account/api-keys and then run:"
     echo "export OPENAI_API_KEY=<your API key>"
-    exit 1
+    zle reset-prompt
+    return 1
   fi
 
   local buffer_context="$BUFFER"
@@ -31,10 +33,13 @@ __lazyshell_complete() {
   local spinner=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
   set +m
   local response_file=$(mktemp)
-  { curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" --data "$data" https://api.openai.com/v1/completions > "$response_file"; } &>/dev/null &
+  { curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" --data "$data" https://api.openai.com/v1/completions > "$response_file" } &>/dev/null &
   local pid=$!
-  while kill -0 $pid 2> /dev/null; do
+  while true; do
     for i in "${spinner[@]}"; do
+      if ! kill -0 $pid 2> /dev/null; then
+        break 2
+      fi
       zle -R "$i GPT query: $REPLY"
       sleep 0.1
     done
