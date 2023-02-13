@@ -44,10 +44,11 @@ __lazyshell_complete() {
       sleep 0.1
     done
   done
-  zle -R
 
+  wait $pid
   if [ $? -ne 0 ]; then
-    echo "Error: API request failed"
+    # todo displayed error is erased immediately, find a better way to display it
+    zle -R "Error: API request failed"
     return 1
   fi
 
@@ -57,9 +58,15 @@ __lazyshell_complete() {
   rm "$response_file"
 
   local generated_text=$(echo -E $response | jq -r '.choices[0].text' | xargs)
+  local error=$(echo -E $response | jq -r '.error.message')
 
   if [ $? -ne 0 ]; then
-    echo "Error: Invalid response from API"
+    zle -R "Error: Invalid response from API"
+    return 1
+  fi
+
+  if [[ -n "$error" && "$error" != "null" ]]; then 
+    zle -R "$error"
     return 1
   fi
 
