@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-make_request() {
+__lazyshell_complete() {
   if [ -z "$OPENAI_API_KEY" ]; then
     echo "Error: OPENAI_API_KEY is not set"
     echo "Get your API key from https://beta.openai.com/account/api-keys and then run:"
@@ -10,26 +10,24 @@ make_request() {
 
   local buffer_context="$BUFFER"
 
+  # Read user input
+  # Todo: use zle to read input
   local REPLY
   autoload -Uz read-from-minibuffer
   read-from-minibuffer '> GPT query: '
   BUFFER="$buffer_context"
   CURSOR=$#BUFFER
 
-  # Determine the prompt based on the buffer context
   if [[ -z "$buffer_context" ]]; then
-    local prompt="Write a bash command for query: \`$REPLY\`"
+    local prompt="Write a bash command for query: \`$REPLY\`. Answer with the command only."
   else
-    local prompt="Alter bash command \`$buffer_context\` to comply with query \`$REPLY\`"
+    local prompt="Alter bash command \`$buffer_context\` to comply with query \`$REPLY\`. Answer with the command only."
   fi
 
-  # Escape the prompt string for use in a JSON string
   local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/\n/\\n/g')
+  local data='{"prompt":"'"$escaped_prompt"'","model":"text-davinci-003","max_tokens":256,"temperature":0}'
 
-  # Generate the JSON data for the API request
-  local data='{"prompt":"'"$escaped_prompt"'","model":"text-davinci-003","max_tokens":256,"temperature":0,"top_p":1}'
-
-  # Display a spinner while the API request is in progress
+  # Display a spinner while the API request is running in the background
   local spinner=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
   set +m
   local response_file=$(mktemp)
@@ -43,19 +41,18 @@ make_request() {
   done
   zle -R
 
-  # Check if the API request failed
   if [ $? -ne 0 ]; then
     echo "Error: API request failed"
     return 1
   fi
 
+  # Read the response from file
+  # Todo: avoid using temp files
   local response=$(cat "$response_file")
   rm "$response_file"
 
-  # Extract the generated text from the response
   local generated_text=$(echo -E $response | jq -r '.choices[0].text' | xargs)
 
-  # Check if the response is valid JSON
   if [ $? -ne 0 ]; then
     echo "Error: Invalid response from API"
     return 1
@@ -72,6 +69,6 @@ if [ -z "$OPENAI_API_KEY" ]; then
   echo "export OPENAI_API_KEY=<your API key>"
 fi
 
-# Bind the make_request function to the Alt-g hotkey
-zle -N make_request
-bindkey '\eg' make_request
+# Bind the __lazyshell_complete function to the Alt-g hotkey
+zle -N __lazyshell_complete
+bindkey '\eg' __lazyshell_complete
