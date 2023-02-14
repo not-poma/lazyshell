@@ -34,7 +34,7 @@ export OPENAI_API_KEY=<your_api_key>
 [ -f ~/.lazyshell.zsh ] && source ~/.lazyshell.zsh
 ```
 
-You can invoke the completion with ALT+G hotkey.
+After that restart your shell. You can invoke the completion with ALT+G hotkey.
 
 # Contributing
 

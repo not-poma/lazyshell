@@ -26,6 +26,7 @@ __lazyshell_complete() {
     local prompt="Alter bash command \`$buffer_context\` to comply with query \`$REPLY\`. Answer with the command only."
   fi
 
+  # todo: better escaping
   local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/\n/\\n/g')
   local data='{"prompt":"'"$escaped_prompt"'","model":"text-davinci-003","max_tokens":256,"temperature":0}'
 
@@ -66,7 +67,7 @@ __lazyshell_complete() {
   fi
 
   if [[ -n "$error" && "$error" != "null" ]]; then 
-    zle -R "$error"
+    zle -R "Error: $error"
     return 1
   fi
 
