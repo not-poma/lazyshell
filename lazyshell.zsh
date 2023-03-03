@@ -58,7 +58,7 @@ __lazyshell_complete() {
   local response=$(cat "$response_file")
   rm "$response_file"
 
-  local generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs)
+  local generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs | sed -e 's/^`\(.*\)`$/\1/')
   local error=$(echo -E $response | jq -r '.error.message')
 
   if [ $? -ne 0 ]; then
