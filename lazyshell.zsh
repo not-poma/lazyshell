@@ -1,5 +1,13 @@
 #!/usr/bin/env zsh
 
+__get_distribution_name() {
+  if [[ "$(uname)" == "Darwin" ]]; then
+    echo "$(sw_vers -productName) $(sw_vers -productVersion)" 2>/dev/null
+  else
+    echo "$(cat /etc/*-release 2>/dev/null | grep PRETTY_NAME | cut -d'"' -f2)"
+  fi
+}
+
 __lazyshell_complete() {
   if [ -z "$OPENAI_API_KEY" ]; then
     echo ""
@@ -20,10 +28,17 @@ __lazyshell_complete() {
   BUFFER="$buffer_context"
   CURSOR=$#BUFFER
 
-  if [[ -z "$buffer_context" ]]; then
-    local prompt="Write a bash command for query: \`$REPLY\`. Answer with the command only."
+  local os=$(__get_distribution_name)
+  if [[ -n "$os" ]]; then
+    os=" for $os"
   else
-    local prompt="Alter bash command \`$buffer_context\` to comply with query \`$REPLY\`. Answer with the command only."
+    os=""
+  fi
+
+  if [[ -z "$buffer_context" ]]; then
+    local prompt="Write a zsh command for query: \`$REPLY\`. Answer with a single command$os only, without any additional characters so it can be pasted into the terminal."
+  else
+    local prompt="Alter zsh command \`$buffer_context\` to comply with query \`$REPLY\`. Answer with a single command$os only, without any additional characters so it can be pasted into the terminal."
   fi
 
   # todo: better escaping
@@ -58,7 +73,7 @@ __lazyshell_complete() {
   local response=$(cat "$response_file")
   rm "$response_file"
 
-  local generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs | sed -e 's/^`\(.*\)`$/\1/')
+  local generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs)
   local error=$(echo -E $response | jq -r '.error.message')
 
   if [ $? -ne 0 ]; then
@@ -67,7 +82,6 @@ __lazyshell_complete() {
   fi
 
   if [[ -n "$error" && "$error" != "null" ]]; then 
-    echo "Error: $error"
     zle -R "Error: $error"
     return 1
   fi
