@@ -35,15 +35,17 @@ __lazyshell_complete() {
     os=""
   fi
 
+  local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations."
+
   if [[ -z "$buffer_context" ]]; then
-    local prompt="Write a zsh command for query: \`$REPLY\`. Answer with a single command$os only, without any additional characters so it can be pasted into the terminal."
+    local prompt="$REPLY"
   else
-    local prompt="Alter zsh command \`$buffer_context\` to comply with query \`$REPLY\`. Answer with a single command$os only, without any additional characters so it can be pasted into the terminal."
+    local prompt="Alter zsh command \`$buffer_context\` to comply with query \`$REPLY\`"
   fi
 
   # todo: better escaping
   local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/\n/\\n/g')
-  local data='{"messages":[{"role": "user", "content": "'"$escaped_prompt"'"}],"model":"gpt-3.5-turbo","max_tokens":256,"temperature":0}'
+  local data='{"messages":[{"role": "system", "content": "'"$intro"'"},{"role": "user", "content": "'"$escaped_prompt"'"}],"model":"gpt-3.5-turbo","max_tokens":256,"temperature":0}'
 
   # Display a spinner while the API request is running in the background
   local spinner=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
@@ -73,7 +75,7 @@ __lazyshell_complete() {
   local response=$(cat "$response_file")
   rm "$response_file"
 
-  local generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs)
+  local generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs | sed -e 's/^`\(.*\)`$/\1/')
   local error=$(echo -E $response | jq -r '.error.message')
 
   if [ $? -ne 0 ]; then
