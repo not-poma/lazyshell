@@ -51,7 +51,7 @@ __lazyshell_complete() {
   local spinner=("⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏")
   set +m
   local response_file=$(mktemp)
-  { curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" --data "$data" https://api.openai.com/v1/chat/completions > "$response_file" } &>/dev/null &
+  { curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer $OPENAI_API_KEY" -d "$data" https://api.openai.com/v1/chat/completions > "$response_file" } &>/dev/null &
   local pid=$!
   while true; do
     for i in "${spinner[@]}"; do
