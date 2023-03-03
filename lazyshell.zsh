@@ -35,7 +35,7 @@ __lazyshell_complete() {
     os=""
   fi
 
-  local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations."
+  local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations. If you fail to answer, start your reason with \`#\`."
 
   if [[ -z "$buffer_context" ]]; then
     local prompt="$REPLY"
