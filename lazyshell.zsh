@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-__get_distribution_name() {
+__lzsh_get_distribution_name() {
   if [[ "$(uname)" == "Darwin" ]]; then
     echo "$(sw_vers -productName) $(sw_vers -productVersion)" 2>/dev/null
   else
@@ -8,8 +8,8 @@ __get_distribution_name() {
   fi
 }
 
-__get_os_prompt_injection() {
-  local os=$(__get_distribution_name)
+__lzsh_get_os_prompt_injection() {
+  local os=$(__lzsh_get_distribution_name)
   if [[ -n "$os" ]]; then
     echo " for $os"
   else
@@ -17,7 +17,7 @@ __get_os_prompt_injection() {
   fi
 }
 
-__preflight_check() {
+__lzsh_preflight_check() {
   if [ -z "$OPENAI_API_KEY" ]; then
     echo ""
     echo "Error: OPENAI_API_KEY is not set"
@@ -28,7 +28,7 @@ __preflight_check() {
   fi
 }
 
-__llm_api_call() {
+__lzsh_llm_api_call() {
   # calls the llm API, shows a nice spinner while it's running, and returns the answer in $generated_text variable
   # must be set: $prompt, $intro, $progress_text
   # called without a subshell be stay in the widget context
@@ -82,8 +82,8 @@ __llm_api_call() {
 }
 
 # Read user query and generates a zsh command
-lazyshell_complete() {
-  $(__preflight_check) || return 1
+__lazyshell_complete() {
+  $(__lzsh_preflight_check) || return 1
 
   local buffer_context="$BUFFER"
   local cursor_position=$CURSOR
@@ -97,7 +97,7 @@ lazyshell_complete() {
   CURSOR=$cursor_position
 
 
-  local os=$(__get_os_prompt_injection)
+  local os=$(__lzsh_get_os_prompt_injection)
   local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations. If you fail to answer, start your response with \`#\`."
   if [[ -z "$buffer_context" ]]; then
     local prompt="$REPLY"
@@ -106,7 +106,7 @@ lazyshell_complete() {
   fi
   local progress_text="Query: $REPLY"
 
-  __llm_api_call
+  __lzsh_llm_api_call
 
   # if response starts with '#' it means GPT failed to generate the command
   if [[ "$generated_text" == \#* ]]; then
@@ -120,17 +120,17 @@ lazyshell_complete() {
 }
 
 # Explains the current zsh command
-lazyshell_explain() {
-  $(__preflight_check) || return 1
+__lazyshell_explain() {
+  $(__lzsh_preflight_check) || return 1
 
   local buffer_context="$BUFFER"
 
-  local os=$(__get_os_prompt_injection)
+  local os=$(__lzsh_get_os_prompt_injection)
   local intro="You are a zsh command explanation assistant$os. You write short explanations what a given zsh command does. You answer with a single paragraph."
   local prompt="$buffer_context"
   local progress_text="Fetching Explanation..."
 
-  __llm_api_call
+  __lzsh_llm_api_call
 
   zle -R "# $generated_text"
   read -k 1
@@ -143,10 +143,11 @@ if [ -z "$OPENAI_API_KEY" ]; then
 fi
 
 # Bind the __lazyshell_complete function to the Alt-g hotkey
-zle -N lazyshell_complete
-zle -N lazyshell_explain
-bindkey '\eg' lazyshell_complete
-bindkey '\ee' lazyshell_explain
+# Bind the __lazyshell_explain function to the Alt-e hotkey
+zle -N __lazyshell_complete
+zle -N __lazyshell_explain
+bindkey '\eg' __lazyshell_complete
+bindkey '\ee' __lazyshell_explain
 
 typeset -ga ZSH_AUTOSUGGEST_CLEAR_WIDGETS
-ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=( lazyshell_explain )
+ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=( __lazyshell_explain )
