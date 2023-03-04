@@ -112,7 +112,7 @@ lazyshell_explain() {
 
   local intro="You are a zsh script explain bot. You are running on $os. You write short and sweet human readable explanations given a zsh script."
 
-  local prompt="This is a zsh command \`$buffer_context\`. What is this doing?"
+  local prompt="This is a zsh command \`$buffer_context\`."
 
   # todo: better escaping
   local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/\n/\\n/g')
