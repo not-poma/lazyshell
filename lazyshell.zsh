@@ -143,7 +143,7 @@ lazyshell_explain() {
     return 1
   fi
 
-  zle -R "$generated_text"
+  zle -R "# $generated_text"
   read -k 1
 
   # Replace the current buffer with the generated text
