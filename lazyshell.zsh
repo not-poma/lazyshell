@@ -28,13 +28,14 @@ __preflight_check() {
     zle reset-prompt
     return 1
   fi
-
 }
 
 __llm_api_call() {
-  # calls the llm API, writes resp in response_file and shows a nice spinner while it's running
-  # must: $prompt, $intro, $response_file be in the env
-  # optionalL: $REPLY should be in the environment for completion
+  # calls the llm API, shows a nice spinner while it's running, and returns the answer in $generated_text variable
+  # must be set: $prompt, $intro, $progress_text
+  # called without a subshell be stay in the widget context
+
+  local response_file=$(mktemp)
 
   # todo: better escaping
   local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/\n/\\n/g')
@@ -54,36 +55,49 @@ __llm_api_call() {
         break 2
       fi
 
-      if [[ -n "$REPLY" ]]; then
-        zle -R "$i Building Query: $REPLY"
-      else
-        zle -R "$i Fetching Explanation..."
-      fi
-
+      zle -R "$i $progress_text"
       sleep 0.1
     done
   done
 
   wait $pid
   if [ $? -ne 0 ]; then
-    # todo displayed error is erased immediately, find a better way to display it
-    zle -R "Error: API request failed"
+    zle -M "Error: API request failed"
+    return 1
+  fi
+
+  local response=$(cat "$response_file")
+  rm "$response_file"
+
+  local error=$(echo -E $response | jq -r '.error.message')
+  generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs -0 | sed -e 's/^`\(.*\)`$/\1/')
+
+  if [ $? -ne 0 ]; then
+    zle -M "Error: Invalid response from API"
+    return 1
+  fi
+
+  if [[ -n "$error" && "$error" != "null" ]]; then 
+    zle -M "Error: $error"
     return 1
   fi
 }
 
+# Read user query and generates a zsh command
 lazyshell_complete() {
   $(__preflight_check) || return 1
 
   local buffer_context="$BUFFER"
+  local cursor_position=$CURSOR
 
   # Read user input
   # Todo: use zle to read input
   local REPLY
   autoload -Uz read-from-minibuffer
-  read-from-minibuffer '> Building Query: '
+  read-from-minibuffer '> Query: '
   BUFFER="$buffer_context"
-  CURSOR=$#BUFFER
+  CURSOR=$cursor_position
+
 
   local os=$(__get_os_prompt_injection)
   local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations. If you fail to answer, start your reason with \`#\`."
@@ -92,22 +106,13 @@ lazyshell_complete() {
   else
     local prompt="Alter zsh command \`$buffer_context\` to comply with query \`$REPLY\`"
   fi
+  local progress_text="Query: $REPLY"
 
-  local response_file=$(mktemp)
   __llm_api_call
-  local response=$(cat "$response_file")
-  rm "$response_file"
 
-  local generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs | sed -e 's/^`\(.*\)`$/\1/')
-  local error=$(echo -E $response | jq -r '.error.message')
-
-  if [ $? -ne 0 ]; then
-    zle -R "Error: Invalid response from API"
-    return 1
-  fi
-
-  if [[ -n "$error" && "$error" != "null" ]]; then 
-    zle -R "Error: $error"
+  # if response starts with '#' it means GPT failed to generate the command
+  if [[ "$generated_text" == \#* ]]; then
+    zle -M "$generated_text"
     return 1
   fi
 
@@ -116,40 +121,21 @@ lazyshell_complete() {
   CURSOR=$#BUFFER
 }
 
+# Explains the current zsh command
 lazyshell_explain() {
   $(__preflight_check) || return 1
 
   local buffer_context="$BUFFER"
-  local cursor_position=$CURSOR
 
   local os=$(__get_os_prompt_injection)
   local intro="You are a zsh script explainer bot$os. You write short and sweet human readable explanations given a zsh script."
   local prompt="This is a zsh command \`$buffer_context\`."
+  local progress_text="Fetching Explanation..."
 
-  local response_file=$(mktemp)
   __llm_api_call
-  local response=$(cat "$response_file")
-  rm "$response_file"
-
-  local generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs | sed -e 's/^`\(.*\)`$/\1/')
-  local error=$(echo -E $response | jq -r '.error.message')
-
-  if [ $? -ne 0 ]; then
-    zle -R "Error: Invalid response from API"
-    return 1
-  fi
-
-  if [[ -n "$error" && "$error" != "null" ]]; then 
-    zle -R "Error: $error"
-    return 1
-  fi
 
   zle -R "# $generated_text"
   read -k 1
-
-  # Replace the current buffer with the generated text
-  BUFFER="$buffer_context"
-  CURSOR=$cursor_position
 }
 
 if [ -z "$OPENAI_API_KEY" ]; then
