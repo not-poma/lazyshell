@@ -88,7 +88,6 @@ lazyshell_complete() {
   local os=$(__get_os_prompt_injection)
 
   local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations. If you fail to answer, start your reason with \`#\`."
-
   if [[ -z "$buffer_context" ]]; then
     local prompt="$REPLY"
   else
@@ -124,22 +123,9 @@ lazyshell_explain() {
   local buffer_context="$BUFFER"
 
   local os=$(__get_os_prompt_injection)
-
   local intro="You are a zsh script explainer bot$os. You write short and sweet human readable explanations given a zsh script."
   local prompt="This is a zsh command \`$buffer_context\`."
 
-
-  # todo: better escaping
-  local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/\n/\\n/g')
-  local data='{"messages":[{"role": "system", "content": "'"$intro"'"},{"role": "user", "content": "'"$escaped_prompt"'"}],"model":"gpt-3.5-turbo","max_tokens":256,"temperature":0}'
-
-  set +m
-  
-  # todo: better escaping
-  local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/\n/\\n/g')
-  local data='{"messages":[{"role": "system", "content": "'"$intro"'"},{"role": "user", "content": "'"$escaped_prompt"'"}],"model":"gpt-3.5-turbo","max_tokens":256,"temperature":0}'
-
-  set +m
   local response_file=$(mktemp)
   __llm_api_call
   local response=$(cat "$response_file")
