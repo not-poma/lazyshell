@@ -126,7 +126,7 @@ __lazyshell_explain() {
   local buffer_context="$BUFFER"
 
   local os=$(__lzsh_get_os_prompt_injection)
-  local intro="You are a zsh command explanation assistant$os. You write short explanations what a given zsh command does. You answer with a single paragraph."
+  local intro="You are a zsh command explanation assistant$os. You write short and consice explanations what a given zsh command does, including the arguments. You answer with no line breaks."
   local prompt="$buffer_context"
   local progress_text="Fetching Explanation..."
 
