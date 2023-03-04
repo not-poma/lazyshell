@@ -143,8 +143,11 @@ lazyshell_explain() {
     return 1
   fi
 
+  zle -R "$generated_text"
+  read -k 1
+
   # Replace the current buffer with the generated text
-  BUFFER="$buffer_context"$'\n'"# $generated_text"
+  BUFFER="$buffer_context"
   CURSOR=$((${#buffer_context}))
 }
 
