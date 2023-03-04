@@ -145,7 +145,7 @@ lazyshell_explain() {
 
   # Replace the current buffer with the generated text
   BUFFER="$buffer_context"$'\n'"# $generated_text"
-  CURSOR=$#BUFFER
+  CURSOR=$((${#buffer_context}))
 }
 
 if [ -z "$OPENAI_API_KEY" ]; then
