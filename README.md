@@ -6,7 +6,15 @@ LazyShell is a GPT powered utility for Zsh that helps you write and modify conso
 
 LazyShell is currently in alpha stage and may have bugs. Currently only Zsh is supported.
 
-### Query examples:
+# How to use
+
+## Completion
+
+1. Hit ALT+g to invoke the completion. The current command line content will be used as a base for your query.
+2. You can then write a natural language version of what you want to accomplish.
+3. Hit enter.
+
+### Query examples for completion:
 
 ```
 Unpack download.tar.gz
@@ -17,6 +25,11 @@ Start nginx server in docker
 Speed up the video 2x using ffmpeg
     Remove audio track
 ```
+
+## Explanation
+
+1. Write down a command you want to understand.
+2. Hit ALT+e to invoke the explanation module.
 
 # Installation
 
@@ -47,7 +60,7 @@ Inspired by https://github.com/TheR1D/shell_gpt
 - [ ] support for other shells
 - [ ] support keyboard interrupts
 - [ ] token streaming
-- [ ] companion tool that explains the current command line contents
+- [x] companion tool that explains the current command line contents
 - [ ] allow query editing while the previous one is in progress
 - [ ] make some kind of preview before replacing the buffer
 - [ ] better json escaping
