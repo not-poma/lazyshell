@@ -71,12 +71,12 @@ __lzsh_llm_api_call() {
   generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs -0 | sed -e 's/^`\(.*\)`$/\1/')
 
   if [ $? -ne 0 ]; then
-    zle -M "Error: Invalid response from API"
+    zle -M "Error: Invalid API response format"
     return 1
   fi
 
-  if [[ -n "$error" && "$error" != "null" ]]; then 
-    zle -M "Error: $error"
+  if [[ -n "$error" && "$error" != "null" ]]; then
+    zle -M "API error: $error"
     return 1
   fi
 }

@@ -2,15 +2,17 @@
 
 LazyShell is a GPT powered utility for Zsh that helps you write and modify console commands using natural language. Perfect for those times when you can't remember the command line arguments for `tar` and `ffmpeg`, or when you just want to save time by having AI do the heavy lifting. The tool uses your current command line content (if any) as a base for your query, so you can issue modification requests for it. Invoke the completion with ALT+G hotkey; you still have to manually press enter to execute the suggested command.
 
+It also can use GPT to explain what the current command does. Invoke the explanation with ALT+E hotkey.
+
 ![Screenshot](https://raw.githubusercontent.com/not-poma/lazyshell/master/screenshot.gif)
 
-LazyShell is currently in alpha stage and may have bugs. Currently only Zsh is supported.
+LazyShell is in alpha stage and may contain bugs. Currently only Zsh is supported.
 
 # How to use
 
 ## Completion
 
-1. Hit ALT+g to invoke the completion. The current command line content will be used as a base for your query.
+1. Hit ALT+G to invoke the completion. The current command line content will be used as a base for your query.
 2. You can then write a natural language version of what you want to accomplish.
 3. Hit enter.
 
@@ -29,11 +31,11 @@ Speed up the video 2x using ffmpeg
 ## Explanation
 
 1. Write down a command you want to understand.
-2. Hit ALT+e to invoke the explanation module.
+2. Hit ALT+E to invoke the explanation module.
 
 # Installation
 
-Get OpenAI API key from [OpenAI dashboard](https://platform.openai.com/account/api-keys).
+Get OpenAI API key from [OpenAI dashboard](https://platform.openai.com/account/api-keys). All new OpenAI accounts get $18 balance for testing.
 
 ```shell
 # install prerequisites
