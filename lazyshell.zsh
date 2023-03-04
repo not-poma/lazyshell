@@ -120,6 +120,7 @@ lazyshell_explain() {
   $(__preflight_check) || return 1
 
   local buffer_context="$BUFFER"
+  local cursor_position=$CURSOR
 
   local os=$(__get_os_prompt_injection)
   local intro="You are a zsh script explainer bot$os. You write short and sweet human readable explanations given a zsh script."
@@ -148,7 +149,7 @@ lazyshell_explain() {
 
   # Replace the current buffer with the generated text
   BUFFER="$buffer_context"
-  CURSOR=$((${#buffer_context}))
+  CURSOR=$cursor_position
 }
 
 if [ -z "$OPENAI_API_KEY" ]; then
