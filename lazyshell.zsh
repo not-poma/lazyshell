@@ -29,9 +29,11 @@ __lzsh_preflight_check() {
 }
 
 __lzsh_llm_api_call() {
-  # calls the llm API, shows a nice spinner while it's running, and returns the answer in $generated_text variable
-  # must be set: $prompt, $intro, $progress_text
-  # called without a subshell be stay in the widget context
+  # calls the llm API, shows a nice spinner while it's running 
+  # called without a subshell to stay in the widget context, returns the answer in $generated_text variable
+  local intro="$1"
+  local prompt="$2"
+  local progress_text="$3"
 
   local response_file=$(mktemp)
 
@@ -104,9 +106,8 @@ __lazyshell_complete() {
   else
     local prompt="Alter zsh command \`$buffer_context\` to comply with query \`$REPLY\`"
   fi
-  local progress_text="Query: $REPLY"
 
-  __lzsh_llm_api_call
+  __lzsh_llm_api_call "$intro" "$prompt" "Query: $REPLY"
 
   # if response starts with '#' it means GPT failed to generate the command
   if [[ "$generated_text" == \#* ]]; then
@@ -128,9 +129,8 @@ __lazyshell_explain() {
   local os=$(__lzsh_get_os_prompt_injection)
   local intro="You are a zsh command explanation assistant$os. You write short and consice explanations what a given zsh command does, including the arguments. You answer with no line breaks."
   local prompt="$buffer_context"
-  local progress_text="Fetching Explanation..."
 
-  __lzsh_llm_api_call
+  __lzsh_llm_api_call "$intro" "$prompt" "Fetching Explanation..."
 
   zle -R "# $generated_text"
   read -k 1

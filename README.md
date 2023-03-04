@@ -52,7 +52,9 @@ export OPENAI_API_KEY=<your_api_key>
 [ -f ~/.lazyshell.zsh ] && source ~/.lazyshell.zsh
 ```
 
-After that restart your shell. You can invoke the completion with ALT+G hotkey.
+After that restart your shell. You can invoke the completion with ALT+G hotkey and explanation with ALT+E.
+
+Note: if you're on macOS and your terminal prints `©` when you press the hotkey, it means the OS intercepts the key combination first and you need to disable this behavior.
 
 ## Alternate Key Bindings
 
