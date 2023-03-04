@@ -11,12 +11,10 @@ __get_distribution_name() {
 __get_os_prompt_injection() {
   local os=$(__get_distribution_name)
   if [[ -n "$os" ]]; then
-    os=" for $os"
+    echo " for $os"
   else
-    os=""
+    echo ""
   fi
-
-  echo $os
 }
 
 __preflight_check() {
@@ -100,7 +98,7 @@ lazyshell_complete() {
 
 
   local os=$(__get_os_prompt_injection)
-  local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations. If you fail to answer, start your reason with \`#\`."
+  local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations. If you fail to answer, start your response with \`#\`."
   if [[ -z "$buffer_context" ]]; then
     local prompt="$REPLY"
   else
@@ -128,8 +126,8 @@ lazyshell_explain() {
   local buffer_context="$BUFFER"
 
   local os=$(__get_os_prompt_injection)
-  local intro="You are a zsh script explainer bot$os. You write short and sweet human readable explanations given a zsh script."
-  local prompt="This is a zsh command \`$buffer_context\`."
+  local intro="You are a zsh command explanation assistant$os. You write short explanations what a given zsh command does. You answer with a single paragraph."
+  local prompt="$buffer_context"
   local progress_text="Fetching Explanation..."
 
   __llm_api_call
