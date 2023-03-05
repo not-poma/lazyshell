@@ -74,6 +74,7 @@ Inspired by https://github.com/TheR1D/shell_gpt
 - [ ] support keyboard interrupts
 - [ ] token streaming
 - [x] companion tool that explains the current command line contents
+- [ ] multiline formatting and syntax highlighting for the explanations
 - [ ] allow query editing while the previous one is in progress
 - [ ] make some kind of preview before replacing the buffer
 - [ ] better json escaping
