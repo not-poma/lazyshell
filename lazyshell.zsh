@@ -108,6 +108,9 @@ __lazyshell_complete() {
   fi
 
   __lzsh_llm_api_call "$intro" "$prompt" "Query: $REPLY"
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
 
   # if response starts with '#' it means GPT failed to generate the command
   if [[ "$generated_text" == \#* ]]; then
@@ -131,6 +134,9 @@ __lazyshell_explain() {
   local prompt="$buffer_context"
 
   __lzsh_llm_api_call "$intro" "$prompt" "Fetching Explanation..."
+  if [ $? -ne 0 ]; then
+    return 1
+  fi
 
   zle -R "# $generated_text"
   read -k 1
