@@ -37,9 +37,9 @@ __lzsh_llm_api_call() {
 
   local response_file=$(mktemp)
 
-  # todo: better escaping
-  local escaped_prompt=$(echo "$prompt" | sed 's/"/\\"/g' | sed 's/\n/\\n/g')
-  local data='{"messages":[{"role": "system", "content": "'"$intro"'"},{"role": "user", "content": "'"$escaped_prompt"'"}],"model":"gpt-3.5-turbo","max_tokens":256,"temperature":0}'
+  local escaped_prompt=$(echo "$prompt" | jq -R -s '.')
+  local escaped_intro=$(echo "$intro" | jq -R -s '.')
+  local data='{"messages":[{"role": "system", "content": '"$escaped_intro"'},{"role": "user", "content": '"$escaped_prompt"'}],"model":"gpt-3.5-turbo","max_tokens":256,"temperature":0}'
 
   # Read the response from file
   # Todo: avoid using temp files
