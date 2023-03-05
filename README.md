@@ -54,6 +54,12 @@ export OPENAI_API_KEY=<your_api_key>
 
 After that restart your shell. You can invoke the completion with ALT+G hotkey.
 
+## Alternate Key Bindings
+
+You can change the key bindings by modifying the lines starting with `bindkey` in the script.'
+
+Make sure it doesn't conflict with your existing key bindings. To check, run `bindkey -L` in your shell.
+
 # Contributing
 
 This script is a crude hack, so any help is appreciated, especially if you can write zsh completion scripts. Feel free to open an issue or a pull request.
