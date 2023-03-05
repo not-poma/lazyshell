@@ -70,7 +70,7 @@ __lzsh_llm_api_call() {
   rm "$response_file"
 
   local error=$(echo -E $response | jq -r '.error.message')
-  generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | xargs -0 | sed -e 's/^`\(.*\)`$/\1/')
+  generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | tr '\n' '\r' | sed -e $'s/^[ \r`]*//; s/[ \r`]*$//' | tr '\r' '\n')
 
   if [ $? -ne 0 ]; then
     zle -M "Error: Invalid API response format"
