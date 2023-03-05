@@ -15,6 +15,8 @@ LazyShell is in alpha stage and may contain bugs. Currently only Zsh is supporte
 1. Hit ALT+G to invoke the completion. The current command line content will be used as a base for your query.
 2. You can then write a natural language version of what you want to accomplish.
 3. Hit enter.
+4. The suggested command will be inserted into the command line.
+5. Hit enter to execute it, or continue modifying it.
 
 ### Query examples for completion:
 
@@ -32,6 +34,7 @@ Speed up the video 2x using ffmpeg
 
 1. Write down a command you want to understand.
 2. Hit ALT+E to invoke the explanation module.
+3. Hit any key to modify the command (the explanation will disappear)
 
 # Installation
 
