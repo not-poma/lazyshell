@@ -72,13 +72,13 @@ Inspired by https://github.com/TheR1D/shell_gpt
 
 - [ ] support for other shells
 - [ ] support keyboard interrupts
-- [ ] token streaming
 - [x] companion tool that explains the current command line contents
 - [ ] multiline formatting and syntax highlighting for the explanations
-- [ ] allow query editing while the previous one is in progress
 - [ ] make some kind of preview before replacing the buffer
-- [ ] better json escaping
-- [ ] better error handling
-- [ ] query history
 - [ ] create brew package
+- [ ] query history
+- [x] better json escaping
+- [x] better error handling
+- [ ] token streaming
+- [ ] allow query editing while the previous one is in progress
 - [ ] maybe choose a better default shortcut?
