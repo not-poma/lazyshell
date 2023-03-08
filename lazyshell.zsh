@@ -85,7 +85,8 @@ __lzsh_llm_api_call() {
   fi
 
   local response=$(cat "$response_file")
-  rm "$response_file"
+  # some shell users may have `alias rm="rm -i"` so use \rm for unaliased rm in user shell
+  \rm "$response_file"
 
   local error=$(echo -E $response | jq -r '.error.message')
   generated_text=$(echo -E $response | jq -r '.choices[0].message.content' | tr '\n' '\r' | sed -e $'s/^[ \r`]*//; s/[ \r`]*$//' | tr '\r' '\n')
