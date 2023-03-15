@@ -21,7 +21,7 @@ __lzsh_preflight_check() {
   if [ -z "$OPENAI_API_KEY" ]; then
     echo ""
     echo "Error: OPENAI_API_KEY is not set"
-    echo "Get your API key from https://beta.openai.com/account/api-keys and then run:"
+    echo "Get your API key from https://platform.openai.com/account/api-keys and then run:"
     echo "export OPENAI_API_KEY=<your API key>"
     zle reset-prompt
     return 1
@@ -149,7 +149,7 @@ __lazyshell_explain() {
   local buffer_context="$BUFFER"
 
   local os=$(__lzsh_get_os_prompt_injection)
-  local intro="You are a zsh command explanation assistant$os. You write short and consice explanations what a given zsh command does, including the arguments. You answer with no line breaks."
+  local intro="You are a zsh command explanation assistant$os. You write short and concise explanations what a given zsh command does, including the arguments. You answer with no line breaks."
   local prompt="$buffer_context"
 
   __lzsh_llm_api_call "$intro" "$prompt" "Fetching Explanation..."
@@ -163,7 +163,7 @@ __lazyshell_explain() {
 
 if [ -z "$OPENAI_API_KEY" ]; then
   echo "Warning: OPENAI_API_KEY is not set"
-  echo "Get your API key from https://beta.openai.com/account/api-keys and then run:"
+  echo "Get your API key from https://platform.openai.com/account/api-keys and then run:"
   echo "export OPENAI_API_KEY=<your API key>"
 fi
 
