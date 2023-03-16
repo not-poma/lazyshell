@@ -104,7 +104,7 @@ __lzsh_llm_api_call() {
 
 # Read user query and generates a zsh command
 __lazyshell_complete() {
-  $(__lzsh_preflight_check) || return 1
+  __lzsh_preflight_check || return 1
 
   local buffer_context="$BUFFER"
   local cursor_position=$CURSOR
@@ -144,7 +144,7 @@ __lazyshell_complete() {
 
 # Explains the current zsh command
 __lazyshell_explain() {
-  $(__lzsh_preflight_check) || return 1
+  __lzsh_preflight_check || return 1
 
   local buffer_context="$BUFFER"
 
