@@ -112,6 +112,10 @@ __lazyshell_complete() {
   local buffer_context="$BUFFER"
   local cursor_position=$CURSOR
 
+
+  # push new history file before reading command
+  fc -ap "${HISTFILE%.lazyshell*}.lazyshell-complete"
+
   # Read user input
   # Todo: use zle to read input
   local REPLY
@@ -120,6 +124,13 @@ __lazyshell_complete() {
   BUFFER="$buffer_context"
   CURSOR=$cursor_position
 
+  if [[ -z $REPLY ]]; then
+    # silently return if user quit with buffer empty
+    return 1
+  fi
+
+  # Save query to lazyshell history
+  print -rs - "$REPLY"
 
   local os=$(__lzsh_get_os_prompt_injection)
   local intro="You are a zsh autocomplete script. All your answers are a single command$os, and nothing else. You do not write any human-readable explanations. If you fail to answer, start your response with \`#\`."
