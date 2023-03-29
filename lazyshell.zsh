@@ -18,6 +18,7 @@ __lzsh_get_os_prompt_injection() {
 }
 
 __lzsh_preflight_check() {
+  emulate -L zsh
   if [ -z "$OPENAI_API_KEY" ]; then
     echo ""
     echo "Error: OPENAI_API_KEY is not set"
@@ -43,6 +44,7 @@ __lzsh_preflight_check() {
 }
 
 __lzsh_llm_api_call() {
+  emulate -L zsh
   # calls the llm API, shows a nice spinner while it's running 
   # called without a subshell to stay in the widget context, returns the answer in $generated_text variable
   local intro="$1"
@@ -104,6 +106,7 @@ __lzsh_llm_api_call() {
 
 # Read user query and generates a zsh command
 __lazyshell_complete() {
+  emulate -L zsh
   __lzsh_preflight_check || return 1
 
   local buffer_context="$BUFFER"
@@ -144,6 +147,7 @@ __lazyshell_complete() {
 
 # Explains the current zsh command
 __lazyshell_explain() {
+  emulate -L zsh
   __lzsh_preflight_check || return 1
 
   local buffer_context="$BUFFER"
