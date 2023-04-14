@@ -53,9 +53,12 @@ __lzsh_llm_api_call() {
 
   local response_file=$(mktemp)
 
-  local escaped_prompt=$(echo "$prompt" | jq -R -s '.')
-  local escaped_intro=$(echo "$intro" | jq -R -s '.')
-  local data='{"messages":[{"role": "system", "content": '"$escaped_intro"'},{"role": "user", "content": '"$escaped_prompt"'}],"model":"gpt-3.5-turbo","max_tokens":256,"temperature":0}'
+  # Set the model. Defaults to gpt-3.5-turbo if $GPT_MODEL is not set.
+  local gpt_model=${GPT_MODEL:-"gpt-3.5-turbo"}
+
+  local escaped_prompt=$(echo "$prompt" | jq -aRs .)
+  local escaped_intro=$(echo "$intro" | jq -aRs .)
+  local data="{\"messages\":[{\"role\": \"system\", \"content\": $escaped_intro},{\"role\": \"user\", \"content\": $escaped_prompt}],\"model\":\"$gpt_model\",\"max_tokens\":256,\"temperature\":0}"
 
   # Read the response from file
   # Todo: avoid using temp files
